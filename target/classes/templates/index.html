@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Etiquetas HTML</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/">
+                <div class="sidebar-logo">&lt;<span>HTML</span>&gt; Catálogo</div>
+                <div class="sidebar-subtitle">Referencia interactiva</div>
+            </a>
+        </div>
+        <div class="sidebar-stats">
+            <span class="stat-pill" th:text="${totalEtiquetas} + ' etiquetas'">40 etiquetas</span>
+            <span class="stat-pill" th:text="${categorias.size()} + ' categorías'">8 categorías</span>
+        </div>
+        <div class="sidebar-section">
+            <th:block th:each="cat : ${categorias}">
+                <div class="sidebar-category" th:text="${cat.key}"></div>
+                <a th:each="tag : ${cat.value}"
+                   th:href="@{'/etiqueta/' + ${tag}}"
+                   class="sidebar-link">
+                    <span class="tag-badge" th:text="'<' + ${tag} + '>'"></span>
+                </a>
+            </th:block>
+        </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="main">
+
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Catálogo de Etiquetas <code>&lt;HTML&gt;</code></h1>
+                <p>Referencia completa e interactiva de etiquetas HTML con ejemplos funcionales, atributos y descripción semántica.</p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="number" th:text="${totalEtiquetas}">40</div>
+                        <div class="label">Etiquetas</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="number" th:text="${categorias.size()}">8</div>
+                        <div class="label">Categorías</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="number">100%</div>
+                        <div class="label">Interactivo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tag Grid by Category -->
+        <div class="content-area">
+            <th:block th:each="cat : ${categorias}">
+                <div class="category-block">
+                    <div class="category-title" th:text="${cat.key}"></div>
+                    <div class="tags-grid">
+                        <a th:each="tagName : ${cat.value}"
+                           th:href="@{'/etiqueta/' + ${tagName}}"
+                           class="tag-card">
+                            <span class="tag-name" th:text="'&lt;' + ${tagName} + '&gt;'"></span>
+                            <span class="tag-desc" th:text="${etiquetas.get(tagName).descripcion}"></span>
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

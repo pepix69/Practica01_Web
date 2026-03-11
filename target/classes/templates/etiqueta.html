@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Etiqueta &lt;' + ${etiqueta.nombre} + '&gt; - Catálogo HTML'">Etiqueta</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/">
+                <div class="sidebar-logo">&lt;<span>HTML</span>&gt; Catálogo</div>
+                <div class="sidebar-subtitle">Referencia interactiva</div>
+            </a>
+        </div>
+        <div class="sidebar-stats">
+            <span class="stat-pill" th:text="${posicion} + '/' + ${total}"></span>
+        </div>
+        <div class="sidebar-section">
+            <th:block th:each="cat : ${categorias}">
+                <div class="sidebar-category" th:text="${cat.key}"></div>
+                <a th:each="tag : ${cat.value}"
+                   th:href="@{'/etiqueta/' + ${tag}}"
+                   th:class="${tag == etiqueta.nombre} ? 'sidebar-link active' : 'sidebar-link'">
+                    <span class="tag-badge" th:text="'<' + ${tag} + '>'"></span>
+                </a>
+            </th:block>
+        </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="main">
+
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="breadcrumb">
+                <a href="/">Catálogo</a>
+                <span>›</span>
+                <span th:text="${etiqueta.categoria}"></span>
+                <span>›</span>
+                <strong th:text="'&lt;' + ${etiqueta.nombre} + '&gt;'"></strong>
+            </div>
+            <div class="topbar-actions">
+                <a href="/" class="back-link">← Volver al catálogo</a>
+            </div>
+        </div>
+
+        <!-- Tag Header -->
+        <div class="tag-header">
+            <div class="tag-title">
+                <h1 th:text="'&lt;' + ${etiqueta.nombre} + '&gt;'"></h1>
+                <span th:class="'category-badge cat-' + ${etiqueta.categoria.replaceAll(' ', '')}"
+                      th:text="${etiqueta.categoria}"></span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"
+                     th:style="'width:' + (${posicion} * 100 / ${total}) + '%'"></div>
+            </div>
+            <p style="margin-top:10px; color: var(--text-muted); font-size:.85rem;"
+               th:text="'Etiqueta ' + ${posicion} + ' de ' + ${total}"></p>
+        </div>
+
+        <!-- Info Cards Grid -->
+        <div class="info-grid">
+
+            <!-- Descripción -->
+            <div class="info-card">
+                <div class="info-card-header">📖 Descripción semántica</div>
+                <div class="info-card-body">
+                    <p th:text="${etiqueta.descripcion}"></p>
+                </div>
+            </div>
+
+            <!-- Atributos -->
+            <div class="info-card">
+                <div class="info-card-header">⚙️ Atributos comunes</div>
+                <div class="info-card-body">
+                    <p th:text="${etiqueta.atributos}" style="font-size:.9rem; color: var(--text-muted);"></p>
+                </div>
+            </div>
+
+            <!-- Sintaxis -->
+            <div class="info-card">
+                <div class="info-card-header">✏️ Sintaxis básica</div>
+                <div class="info-card-body">
+                    <pre th:text="${etiqueta.sintaxis}"></pre>
+                </div>
+            </div>
+
+            <!-- Código de ejemplo -->
+            <div class="info-card">
+                <div class="info-card-header">💻 Código de ejemplo</div>
+                <div class="info-card-body">
+                    <pre th:text="${etiqueta.ejemploCodigo}"></pre>
+                </div>
+            </div>
+
+            <!-- Ejemplo renderizado (full width) -->
+            <div class="info-card full-width">
+                <div class="info-card-header">🎨 Ejemplo renderizado</div>
+                <div class="info-card-body">
+                    <div class="render-area">
+
+                        <!-- html -->
+                        <th:block th:if="${etiqueta.nombre == 'html'}">
+                            <p>La etiqueta <code>&lt;html&gt;</code> envuelve todo el documento:</p>
+                            <pre style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;font-size:.82rem">&lt;html lang="es"&gt;
+  &lt;head&gt;...&lt;/head&gt;
+  &lt;body&gt;...&lt;/body&gt;
+&lt;/html&gt;</pre>
+                        </th:block>
+
+                        <!-- head -->
+                        <th:block th:if="${etiqueta.nombre == 'head'}">
+                            <pre style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;font-size:.82rem">&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Mi Página&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;</pre>
+                        </th:block>
+
+                        <!-- body -->
+                        <th:block th:if="${etiqueta.nombre == 'body'}">
+                            <p>Todo lo que ves aquí está dentro del <code>&lt;body&gt;</code>:</p>
+                            <div style="border:2px solid var(--primary);border-radius:8px;padding:16px;margin-top:10px">
+                                <h3 style="margin-bottom:8px">Contenido del body</h3>
+                                <p>Texto, imágenes, formularios...</p>
+                            </div>
+                        </th:block>
+
+                        <!-- meta -->
+                        <th:block th:if="${etiqueta.nombre == 'meta'}">
+                            <pre style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;font-size:.82rem">&lt;meta charset="UTF-8"&gt;
+&lt;meta name="description" content="Mi página web"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</pre>
+                        </th:block>
+
+                        <!-- title -->
+                        <th:block th:if="${etiqueta.nombre == 'title'}">
+                            <div style="background:#f1f5f9;border-radius:8px;padding:12px;display:flex;align-items:center;gap:12px">
+                                <div style="background:white;border:1px solid #ccc;border-radius:6px;padding:6px 16px;font-size:.85rem;display:flex;align-items:center;gap:8px">
+                                    <span>🌐</span>
+                                    <span>Catálogo HTML - Inicio</span>
+                                    <span style="color:#999">×</span>
+                                </div>
+                            </div>
+                            <p style="margin-top:10px;color:var(--text-muted);font-size:.85rem">↑ El texto del &lt;title&gt; aparece en la pestaña del navegador</p>
+                        </th:block>
+
+                        <!-- h1 -->
+                        <th:block th:if="${etiqueta.nombre == 'h1'}">
+                            <h1>Título Principal de la Página</h1>
+                        </th:block>
+
+                        <!-- h2 -->
+                        <th:block th:if="${etiqueta.nombre == 'h2'}">
+                            <h1>Página principal</h1>
+                            <h2>Sección de contenido</h2>
+                            <p>El h2 es suborden del h1.</p>
+                        </th:block>
+
+                        <!-- h3 -->
+                        <th:block th:if="${etiqueta.nombre == 'h3'}">
+                            <h2>Sección</h2>
+                            <h3>Subsección con h3</h3>
+                            <p>Texto de la subsección.</p>
+                        </th:block>
+
+                        <!-- p -->
+                        <th:block th:if="${etiqueta.nombre == 'p'}">
+                            <p>Este es el primer párrafo. Contiene texto e información relevante sobre el tema.</p>
+                            <p>Este es el segundo párrafo. Observa el espacio automático entre párrafos.</p>
+                        </th:block>
+
+                        <!-- span -->
+                        <th:block th:if="${etiqueta.nombre == 'span'}">
+                            <p>El cielo es <span style="color:#3b82f6;font-weight:bold">azul</span> y el sol es <span style="color:#f59e0b;font-weight:bold">amarillo</span>.</p>
+                        </th:block>
+
+                        <!-- strong -->
+                        <th:block th:if="${etiqueta.nombre == 'strong'}">
+                            <p><strong>Advertencia:</strong> No olvides guardar tu trabajo antes de cerrar.</p>
+                            <p>El texto <strong>importante</strong> aparece en negrita.</p>
+                        </th:block>
+
+                        <!-- em -->
+                        <th:block th:if="${etiqueta.nombre == 'em'}">
+                            <p>Debes <em>siempre</em> revisar tu código.</p>
+                            <p>El <em>énfasis</em> muestra el texto en cursiva.</p>
+                        </th:block>
+
+                        <!-- br -->
+                        <th:block th:if="${etiqueta.nombre == 'br'}">
+                            <p>Primera línea<br>Segunda línea<br>Tercera línea</p>
+                        </th:block>
+
+                        <!-- hr -->
+                        <th:block th:if="${etiqueta.nombre == 'hr'}">
+                            <p>Sección 1 - Contenido inicial</p>
+                            <hr>
+                            <p>Sección 2 - Nuevo tema después del separador</p>
+                        </th:block>
+
+                        <!-- blockquote -->
+                        <th:block th:if="${etiqueta.nombre == 'blockquote'}">
+                            <blockquote>"El código es poesía — es la única forma de arte que crea algo que funciona."</blockquote>
+                        </th:block>
+
+                        <!-- code -->
+                        <th:block th:if="${etiqueta.nombre == 'code'}">
+                            <p>Usa <code>console.log()</code> para depurar en JavaScript.</p>
+                            <p>La función <code>print()</code> imprime en Python.</p>
+                        </th:block>
+
+                        <!-- pre -->
+                        <th:block th:if="${etiqueta.nombre == 'pre'}">
+<pre>function saludar(nombre) {
+    console.log("Hola, " + nombre);
+}
+saludar("mundo");</pre>
+                        </th:block>
+
+                        <!-- a -->
+                        <th:block th:if="${etiqueta.nombre == 'a'}">
+                            <p><a href="/">Ir al catálogo principal</a></p>
+                            <p><a href="https://developer.mozilla.org" target="_blank" rel="noopener">MDN Web Docs (nueva pestaña)</a></p>
+                            <p><a href="mailto:ejemplo@correo.com">Enviar correo</a></p>
+                        </th:block>
+
+                        <!-- img -->
+                        <th:block th:if="${etiqueta.nombre == 'img'}">
+                            <img src="https://via.placeholder.com/300x150/4f46e5/ffffff?text=Imagen+HTML" alt="Imagen de ejemplo" style="border-radius:8px">
+                            <p style="margin-top:8px;font-size:.8rem;color:var(--text-muted)">Imagen con width=300, alt descriptivo</p>
+                        </th:block>
+
+                        <!-- ul -->
+                        <th:block th:if="${etiqueta.nombre == 'ul'}">
+                            <ul>
+                                <li>HTML - Estructura</li>
+                                <li>CSS - Estilos</li>
+                                <li>JavaScript - Interactividad</li>
+                            </ul>
+                        </th:block>
+
+                        <!-- ol -->
+                        <th:block th:if="${etiqueta.nombre == 'ol'}">
+                            <ol>
+                                <li>Aprende HTML</li>
+                                <li>Aprende CSS</li>
+                                <li>Aprende JavaScript</li>
+                                <li>Construye proyectos</li>
+                            </ol>
+                        </th:block>
+
+                        <!-- li -->
+                        <th:block th:if="${etiqueta.nombre == 'li'}">
+                            <ul>
+                                <li>Elemento de lista desordenada</li>
+                                <li>Otro elemento</li>
+                            </ul>
+                            <ol>
+                                <li>Primer elemento ordenado</li>
+                                <li>Segundo elemento</li>
+                            </ol>
+                        </th:block>
+
+                        <!-- dl -->
+                        <th:block th:if="${etiqueta.nombre == 'dl'}">
+                            <dl>
+                                <dt>HTML</dt>
+                                <dd>Lenguaje de marcado para páginas web</dd>
+                                <dt>CSS</dt>
+                                <dd>Lenguaje de estilos visuales</dd>
+                                <dt>JavaScript</dt>
+                                <dd>Lenguaje de programación para la web</dd>
+                            </dl>
+                        </th:block>
+
+                        <!-- table -->
+                        <th:block th:if="${etiqueta.nombre == 'table'}">
+                            <table>
+                                <thead><tr><th>Nombre</th><th>Categoría</th><th>Nivel</th></tr></thead>
+                                <tbody>
+                                <tr><td>HTML</td><td>Frontend</td><td>Básico</td></tr>
+                                <tr><td>Spring Boot</td><td>Backend</td><td>Intermedio</td></tr>
+                                <tr><td>Docker</td><td>DevOps</td><td>Avanzado</td></tr>
+                                </tbody>
+                            </table>
+                        </th:block>
+
+                        <!-- tr -->
+                        <th:block th:if="${etiqueta.nombre == 'tr'}">
+                            <table>
+                                <tr style="background:#e0e7ff"><td>Fila 1 - Celda A</td><td>Fila 1 - Celda B</td></tr>
+                                <tr style="background:#f0fdf4"><td>Fila 2 - Celda A</td><td>Fila 2 - Celda B</td></tr>
+                            </table>
+                        </th:block>
+
+                        <!-- td -->
+                        <th:block th:if="${etiqueta.nombre == 'td'}">
+                            <table>
+                                <tr><th>Col 1</th><th>Col 2</th><th>Col 3</th></tr>
+                                <tr><td>Dato A1</td><td colspan="2" style="text-align:center;background:#fef9c3">Dato fusionado (colspan=2)</td></tr>
+                                <tr><td>Dato A2</td><td>Dato B2</td><td>Dato C2</td></tr>
+                            </table>
+                        </th:block>
+
+                        <!-- th -->
+                        <th:block th:if="${etiqueta.nombre == 'th'}">
+                            <table>
+                                <tr><th scope="col">Producto</th><th scope="col">Precio</th><th scope="col">Stock</th></tr>
+                                <tr><td>Laptop</td><td>$999</td><td>15</td></tr>
+                                <tr><td>Mouse</td><td>$29</td><td>50</td></tr>
+                            </table>
+                        </th:block>
+
+                        <!-- thead -->
+                        <th:block th:if="${etiqueta.nombre == 'thead'}">
+                            <table>
+                                <thead><tr><th>Encabezado 1</th><th>Encabezado 2</th></tr></thead>
+                                <tbody>
+                                <tr><td>Fila de datos</td><td>Más datos</td></tr>
+                                </tbody>
+                                <tfoot><tr><td colspan="2" style="text-align:center;font-style:italic">Pie de tabla</td></tr></tfoot>
+                            </table>
+                        </th:block>
+
+                        <!-- form -->
+                        <th:block th:if="${etiqueta.nombre == 'form'}">
+                            <form style="display:flex;flex-direction:column;gap:12px;max-width:300px">
+                                <input type="text" placeholder="Tu nombre" style="padding:8px;border:1px solid #ccc;border-radius:6px">
+                                <input type="email" placeholder="tu@email.com" style="padding:8px;border:1px solid #ccc;border-radius:6px">
+                                <button type="submit">Enviar</button>
+                            </form>
+                        </th:block>
+
+                        <!-- input -->
+                        <th:block th:if="${etiqueta.nombre == 'input'}">
+                            <div style="display:flex;flex-direction:column;gap:10px;max-width:280px">
+                                <input type="text" placeholder="Texto libre">
+                                <input type="email" placeholder="correo@ejemplo.com">
+                                <input type="password" placeholder="Contraseña">
+                                <input type="number" min="1" max="10" value="5">
+                                <div style="display:flex;gap:8px;align-items:center">
+                                    <input type="checkbox" id="check1">
+                                    <label for="check1">Acepto términos</label>
+                                </div>
+                                <input type="range" min="0" max="100" value="50">
+                                <input type="color" value="#4f46e5">
+                            </div>
+                        </th:block>
+
+                        <!-- label -->
+                        <th:block th:if="${etiqueta.nombre == 'label'}">
+                            <div style="display:flex;flex-direction:column;gap:10px;max-width:280px">
+                                <div>
+                                    <label for="demo-nombre">Nombre completo:</label>
+                                    <input type="text" id="demo-nombre" placeholder="Ingresa tu nombre">
+                                </div>
+                                <div style="display:flex;gap:8px;align-items:center">
+                                    <input type="checkbox" id="demo-terms">
+                                    <label for="demo-terms">Acepto los términos y condiciones</label>
+                                </div>
+                            </div>
+                        </th:block>
+
+                        <!-- button -->
+                        <th:block th:if="${etiqueta.nombre == 'button'}">
+                            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                                <button type="button" onclick="alert('¡Hola desde un botón HTML!')">Clic aquí</button>
+                                <button type="button" style="background:#10b981">Aceptar</button>
+                                <button type="button" style="background:#ef4444">Eliminar</button>
+                                <button type="button" disabled>Desactivado</button>
+                            </div>
+                        </th:block>
+
+                        <!-- select -->
+                        <th:block th:if="${etiqueta.nombre == 'select'}">
+                            <div style="display:flex;flex-direction:column;gap:10px;max-width:240px">
+                                <label for="demo-pais">País:</label>
+                                <select id="demo-pais">
+                                    <option value="">-- Selecciona --</option>
+                                    <option value="mx">🇲🇽 México</option>
+                                    <option value="es">🇪🇸 España</option>
+                                    <option value="ar">🇦🇷 Argentina</option>
+                                    <option value="co">🇨🇴 Colombia</option>
+                                </select>
+                            </div>
+                        </th:block>
+
+                        <!-- textarea -->
+                        <th:block th:if="${etiqueta.nombre == 'textarea'}">
+                            <div style="max-width:360px">
+                                <label for="demo-msg" style="display:block;margin-bottom:6px">Tu mensaje:</label>
+                                <textarea id="demo-msg" rows="4" cols="40" placeholder="Escribe tu comentario aquí..."></textarea>
+                            </div>
+                        </th:block>
+
+                        <!-- option -->
+                        <th:block th:if="${etiqueta.nombre == 'option'}">
+                            <select style="padding:8px;border-radius:6px;border:1px solid #ccc">
+                                <option value="">-- Selecciona una opción --</option>
+                                <option value="a" selected>Opción A (seleccionada)</option>
+                                <option value="b">Opción B</option>
+                                <option value="c" disabled>Opción C (desactivada)</option>
+                            </select>
+                        </th:block>
+
+                        <!-- audio -->
+                        <th:block th:if="${etiqueta.nombre == 'audio'}">
+                            <p style="color:var(--text-muted);font-size:.9rem">Ejemplo de elemento audio con controles nativos:</p>
+                            <audio controls style="margin-top:10px">
+                                <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg">
+                                Tu navegador no soporta el elemento audio.
+                            </audio>
+                        </th:block>
+
+                        <!-- video -->
+                        <th:block th:if="${etiqueta.nombre == 'video'}">
+                            <p style="color:var(--text-muted);font-size:.9rem">Ejemplo de elemento video con controles nativos:</p>
+                            <video width="320" controls style="margin-top:10px;border-radius:8px">
+                                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                Tu navegador no soporta el elemento video.
+                            </video>
+                        </th:block>
+
+                        <!-- source -->
+                        <th:block th:if="${etiqueta.nombre == 'source'}">
+                            <pre style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;font-size:.82rem">&lt;video controls&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+  &lt;source src="video.webm" type="video/webm"&gt;
+  Navegador sin soporte de video.
+&lt;/video&gt;</pre>
+                        </th:block>
+
+                        <!-- iframe -->
+                        <th:block th:if="${etiqueta.nombre == 'iframe'}">
+                            <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:8px">iframe embebiendo Google Maps:</p>
+                            <iframe
+                                    src="https://www.openstreetmap.org/export/embed.html?bbox=-99.1,19.4,-99.0,19.5&amp;layer=mapnik"
+                                    width="100%" height="200"
+                                    title="Mapa de ejemplo"
+                                    style="border:1px solid #ccc;border-radius:8px"></iframe>
+                        </th:block>
+
+                        <!-- header -->
+                        <th:block th:if="${etiqueta.nombre == 'header'}">
+                            <div style="border:2px solid var(--primary);border-radius:8px;overflow:hidden">
+                                <header style="background:var(--primary);color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center">
+                                    <strong>🌐 Mi Sitio Web</strong>
+                                    <nav>
+                                        <a href="#" style="color:white;margin:0 8px">Inicio</a>
+                                        <a href="#" style="color:rgba(255,255,255,.7);margin:0 8px">Blog</a>
+                                        <a href="#" style="color:rgba(255,255,255,.7);margin:0 8px">Contacto</a>
+                                    </nav>
+                                </header>
+                                <div style="padding:16px;background:#f8fafc">Contenido principal aquí...</div>
+                            </div>
+                        </th:block>
+
+                        <!-- footer -->
+                        <th:block th:if="${etiqueta.nombre == 'footer'}">
+                            <div style="border:2px solid var(--border);border-radius:8px;overflow:hidden">
+                                <div style="padding:16px;background:#f8fafc">Contenido principal aquí...</div>
+                                <footer style="background:#1e293b;color:white;padding:16px 24px;text-align:center">
+                                    <p>&copy; 2024 Mi Empresa. Todos los derechos reservados.</p>
+                                    <p style="font-size:.8rem;color:rgba(255,255,255,.5);margin-top:4px">
+                                        <a href="#" style="color:rgba(255,255,255,.6)">Privacidad</a> ·
+                                        <a href="#" style="color:rgba(255,255,255,.6)">Términos</a>
+                                    </p>
+                                </footer>
+                            </div>
+                        </th:block>
+
+                        <!-- nav -->
+                        <th:block th:if="${etiqueta.nombre == 'nav'}">
+                            <nav style="background:#f1f5f9;padding:12px 20px;border-radius:8px">
+                                <ul style="list-style:none;display:flex;gap:20px;padding:0;margin:0">
+                                    <li><a href="#">🏠 Inicio</a></li>
+                                    <li><a href="#">📰 Blog</a></li>
+                                    <li><a href="#">👤 Acerca de</a></li>
+                                    <li><a href="#">✉️ Contacto</a></li>
+                                </ul>
+                            </nav>
+                        </th:block>
+
+                        <!-- main -->
+                        <th:block th:if="${etiqueta.nombre == 'main'}">
+                            <div style="border:2px solid var(--border);border-radius:8px;overflow:hidden">
+                                <header style="background:#6366f1;color:white;padding:10px 16px;font-size:.85rem">header</header>
+                                <main style="padding:16px;border-left:3px solid #10b981;margin:8px">
+                                    <p style="color:#065f46;font-weight:600">✓ &lt;main&gt; — Contenido principal único</p>
+                                    <p style="font-size:.9rem;color:var(--text-muted)">Aquí va el artículo o contenido central.</p>
+                                </main>
+                                <footer style="background:#1e293b;color:white;padding:10px 16px;font-size:.85rem">footer</footer>
+                            </div>
+                        </th:block>
+
+                        <!-- section -->
+                        <th:block th:if="${etiqueta.nombre == 'section'}">
+                            <section style="border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px">
+                                <h2 style="font-size:1.1rem">Sección: Servicios</h2>
+                                <p>Ofrecemos diseño web, desarrollo y consultoría.</p>
+                            </section>
+                            <section style="border:1px solid var(--border);border-radius:8px;padding:16px">
+                                <h2 style="font-size:1.1rem">Sección: Contacto</h2>
+                                <p>Escríbenos a info@ejemplo.com</p>
+                            </section>
+                        </th:block>
+
+                        <!-- article -->
+                        <th:block th:if="${etiqueta.nombre == 'article'}">
+                            <article style="border:1px solid var(--border);border-radius:8px;padding:20px">
+                                <h2 style="font-size:1.1rem;margin-bottom:4px">Cómo aprender HTML en 2024</h2>
+                                <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:10px">Publicado el 1 de enero de 2024</p>
+                                <p>El HTML es el lenguaje base de la web. Aprender sus etiquetas es el primer paso para convertirte en desarrollador web...</p>
+                            </article>
+                        </th:block>
+
+                        <!-- aside -->
+                        <th:block th:if="${etiqueta.nombre == 'aside'}">
+                            <div style="display:grid;grid-template-columns:1fr 200px;gap:16px">
+                                <div>
+                                    <h3 style="font-size:1rem">Artículo principal</h3>
+                                    <p style="font-size:.9rem">Contenido principal del artículo aquí...</p>
+                                </div>
+                                <aside style="background:#f1f5f9;border-radius:8px;padding:14px">
+                                    <h4 style="font-size:.85rem;margin-bottom:8px">📌 Relacionados</h4>
+                                    <ul style="font-size:.8rem;padding-left:16px">
+                                        <li><a href="#">Artículo 1</a></li>
+                                        <li><a href="#">Artículo 2</a></li>
+                                    </ul>
+                                </aside>
+                            </div>
+                        </th:block>
+
+                        <!-- div -->
+                        <th:block th:if="${etiqueta.nombre == 'div'}">
+                            <div style="display:flex;gap:12px;flex-wrap:wrap">
+                                <div style="background:var(--primary-light);border-radius:10px;padding:16px;flex:1;min-width:120px">
+                                    <h3 style="font-size:.9rem;color:var(--primary)">Tarjeta 1</h3>
+                                    <p style="font-size:.8rem">Contenido agrupado con div.</p>
+                                </div>
+                                <div style="background:#dcfce7;border-radius:10px;padding:16px;flex:1;min-width:120px">
+                                    <h3 style="font-size:.9rem;color:#166534">Tarjeta 2</h3>
+                                    <p style="font-size:.8rem">Otro grupo de contenido.</p>
+                                </div>
+                            </div>
+                        </th:block>
+
+                        <!-- details -->
+                        <th:block th:if="${etiqueta.nombre == 'details'}">
+                            <details>
+                                <summary>¿Qué es HTML?</summary>
+                                <p style="margin-top:8px">HTML (HyperText Markup Language) es el lenguaje estándar para crear páginas web.</p>
+                            </details>
+                            <details style="margin-top:10px">
+                                <summary>¿Qué es CSS?</summary>
+                                <p style="margin-top:8px">CSS (Cascading Style Sheets) controla el diseño y apariencia visual de las páginas HTML.</p>
+                            </details>
+                        </th:block>
+
+                        <!-- summary -->
+                        <th:block th:if="${etiqueta.nombre == 'summary'}">
+                            <details>
+                                <summary>← Haz clic en este summary para revelar el contenido oculto</summary>
+                                <p style="margin-top:10px;padding:12px;background:#f0fdf4;border-radius:6px">¡Contenido revelado! El summary es el título clickeable del elemento details.</p>
+                            </details>
+                        </th:block>
+
+                        <!-- Fallback para etiquetas sin ejemplo específico -->
+                        <th:block th:if="${etiqueta.nombre != 'html' and etiqueta.nombre != 'head' and
+                            etiqueta.nombre != 'body' and etiqueta.nombre != 'meta' and etiqueta.nombre != 'title' and
+                            etiqueta.nombre != 'h1' and etiqueta.nombre != 'h2' and etiqueta.nombre != 'h3' and
+                            etiqueta.nombre != 'p' and etiqueta.nombre != 'span' and etiqueta.nombre != 'strong' and
+                            etiqueta.nombre != 'em' and etiqueta.nombre != 'br' and etiqueta.nombre != 'hr' and
+                            etiqueta.nombre != 'blockquote' and etiqueta.nombre != 'code' and etiqueta.nombre != 'pre' and
+                            etiqueta.nombre != 'a' and etiqueta.nombre != 'img' and
+                            etiqueta.nombre != 'ul' and etiqueta.nombre != 'ol' and etiqueta.nombre != 'li' and etiqueta.nombre != 'dl' and
+                            etiqueta.nombre != 'table' and etiqueta.nombre != 'tr' and etiqueta.nombre != 'td' and
+                            etiqueta.nombre != 'th' and etiqueta.nombre != 'thead' and
+                            etiqueta.nombre != 'form' and etiqueta.nombre != 'input' and etiqueta.nombre != 'label' and
+                            etiqueta.nombre != 'button' and etiqueta.nombre != 'select' and etiqueta.nombre != 'textarea' and etiqueta.nombre != 'option' and
+                            etiqueta.nombre != 'audio' and etiqueta.nombre != 'video' and etiqueta.nombre != 'source' and etiqueta.nombre != 'iframe' and
+                            etiqueta.nombre != 'header' and etiqueta.nombre != 'footer' and etiqueta.nombre != 'nav' and
+                            etiqueta.nombre != 'main' and etiqueta.nombre != 'section' and etiqueta.nombre != 'article' and
+                            etiqueta.nombre != 'aside' and etiqueta.nombre != 'div' and etiqueta.nombre != 'details' and etiqueta.nombre != 'summary'}">
+                            <p style="color:var(--text-muted);font-style:italic">Ver el código de ejemplo arriba para uso práctico.</p>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-section">
+            <div>
+                <a th:if="${anterior != null}"
+                   th:href="@{'/etiqueta/' + ${anterior}}"
+                   class="nav-btn">
+                    ← <span th:text="'&lt;' + ${anterior} + '&gt;'"></span>
+                </a>
+                <div th:if="${anterior == null}" class="nav-btn-placeholder"></div>
+            </div>
+
+            <div class="nav-center">
+                <div th:text="${posicion} + ' / ' + ${total}" style="font-weight:700;font-size:1.1rem"></div>
+                <div>etiquetas</div>
+                <div style="margin-top:6px">
+                    <a href="/" style="color:var(--primary);font-size:.8rem">Ver todas</a>
+                </div>
+            </div>
+
+            <div>
+                <a th:if="${siguiente != null}"
+                   th:href="@{'/etiqueta/' + ${siguiente}}"
+                   class="nav-btn nav-btn-primary">
+                    <span th:text="'&lt;' + ${siguiente} + '&gt;'"></span> →
+                </a>
+                <div th:if="${siguiente == null}" class="nav-btn-placeholder"></div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>
